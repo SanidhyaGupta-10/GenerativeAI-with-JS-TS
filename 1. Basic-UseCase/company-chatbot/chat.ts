@@ -2,10 +2,15 @@ import readline from 'node:readline/promises';
 import Groq from 'groq-sdk';
 import { vectorStore } from './prepare.js';
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = new Groq({ 
+    apiKey: process.env.GROQ_API_KEY 
+});
 
 export async function chat() {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    const rl = readline.createInterface({ 
+        input: process.stdin,
+        output: process.stdout 
+    });
 
     while (true) {
         const question = await rl.question('You: ');

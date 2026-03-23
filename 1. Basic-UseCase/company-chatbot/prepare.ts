@@ -8,7 +8,9 @@ import { Pinecone as PineconeClient } from "@pinecone-database/pinecone";
 
 /* ---------------- ENV VALIDATION ---------------- */
 
-if (!process.env.GOOGLE_API_KEY) {
+const GOOGLE_API_KEY =  process.env.GOOGLE_API_KEY
+
+if (!GOOGLE_API_KEY) {
   throw new Error("GOOGLE_API_KEY missing in .env");
 }
 
