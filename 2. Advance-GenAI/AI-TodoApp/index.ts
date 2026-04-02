@@ -192,3 +192,36 @@ async function run() {
 
 // Start the application
 run();
+
+
+// >> Add buy milk
+
+// [Inner Loop - Iteration 1]
+// ├─ Send to AI: [system prompt + user: "Add buy milk"]
+// ├─ AI responds: {"type":"plan","plan":"Add buy milk to todo list"}
+// ├─ Show: 🧠 Plan: Add buy milk to todo list
+// └─ Loop continues (no break)
+
+// [Inner Loop - Iteration 2]
+// ├─ AI (with history) responds: {"type":"action","name":"addTodo","args":{"todo":"buy milk"}}
+// ├─ Execute: await addTodo({todo:"buy milk"})
+// ├─ Get observation: {id:5, todo:"buy milk", isCompleted:false}
+// ├─ Add to history: {"type":"observation","observation":{id:5,...}}
+// └─ Loop continues (no break)
+
+// [Inner Loop - Iteration 3]
+// ├─ AI (with history) responds: {"type":"output","output":"Added buy milk to your todos"}
+// ├─ Show: 🤖: Added buy milk to your todos
+// └─ BREAK - Exit inner loop
+
+// [Back to Outer Loop]
+// └─ Wait for next user input: ">> "
+
+// run()
+//   └─ while (true)           // Forever
+//        ├─ Get input         // readlineSync
+//        ├─ Add to history    // messages.push
+//        └─ while (true)      // Process until output
+//             ├─ Call AI      // client.chat
+//             ├─ Parse JSON   // JSON.parse
+//             └─ Switch type  // plan/action/output
