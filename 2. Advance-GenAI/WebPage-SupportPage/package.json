@@ -12,6 +12,12 @@
   "type": "commonjs",
   "dependencies": {
     "axios": "^1.14.0",
-    "cheerio": "^1.2.0"
+    "cheerio": "^1.2.0",
+    "chromadb": "^3.4.0",
+    "dotenv": "^17.4.1",
+    "openai": "^6.33.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2"
   }
 }
