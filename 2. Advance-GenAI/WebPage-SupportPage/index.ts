@@ -62,24 +62,41 @@ async function ingest(url: string){
         pageHead, pageBody
     } = await scrapeWebPage(url);
 
-    const headEmbedding = await generateVectorEmbedding({text: pageHead!});
+    if (!pageHead || pageHead.trim().length === 0) {
+        console.warn("Warning: No head content found for", url);
+        return;
+    }
+
+    if (!pageBody || pageBody.trim().length === 0) {
+        console.warn("Warning: No body content found for", url);
+        return;
+    }
+
+    const headEmbedding = await generateVectorEmbedding({text: pageHead});
     await collection.add({
         embeddings: [headEmbedding],
         metadatas: [{ type: "head", url }],
-        documents: [pageHead!],
+        documents: [pageHead],
         ids: [`head-${Date.now()}`]
     });
 
-    const chunks = chunkText(pageBody!);
+    const chunks = chunkText(pageBody);
+    const validChunks = chunks.filter(chunk => chunk.trim().length > 0);
+
+    if (validChunks.length === 0) {
+        console.warn("Warning: No valid text chunks to embed");
+        return;
+    }
+
     const bodyEmbeddings = await Promise.all(
-        chunks.map((chunk) => generateVectorEmbedding({text: chunk}))
+        validChunks.map((chunk) => generateVectorEmbedding({text: chunk}))
     );
 
     for (let i = 0; i < bodyEmbeddings.length; i++) {
         await collection.add({
             embeddings: [bodyEmbeddings[i]],
             metadatas: [{ type: "body", chunkIndex: i.toString(), url }],
-            documents: [chunks[i]],
+            documents: [validChunks[i]],
             ids: [`body-${Date.now()}-${i}`]
         });
     }
