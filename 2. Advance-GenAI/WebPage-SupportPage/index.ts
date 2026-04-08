@@ -152,7 +152,7 @@ Question: ${question}
 Answer the question using only the information from the context above. If the answer is not in the context, say so.`,
     });
 
-    console.log("Answer:", response.response.text());
+    console.log("Answer:", response.text);
 }
 
 // Example usage:
