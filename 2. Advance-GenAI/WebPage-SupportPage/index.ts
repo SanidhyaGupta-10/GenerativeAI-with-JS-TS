@@ -11,10 +11,10 @@ const openai = new OpenAI({
 });
 
 const client = new ChromaClient({
-    path: 'http://localhost:8000'
+    port: 8000
 });
 
-client.heartbeat();
+const WEB_COLLECTION = "WEB_SCRAPED_DATA";
 
 async function scrapeWebPage(url: string){
     const { data } = await axios.get(url);
@@ -51,19 +51,38 @@ async function generateVectorEmbedding(
 };
 
 async function ingest(url: string){
-    const { 
-        pageHead, pageBody, internalLinks, externalLinks 
+    const collection = await client.getOrCreateCollection({
+        name: WEB_COLLECTION,
+    });
+
+    const {
+        pageHead, pageBody
     } = await scrapeWebPage(url);
 
     const headEmbedding = await generateVectorEmbedding({text: pageHead!});
+    await collection.add({
+        embeddings: [headEmbedding],
+        metadatas: [{ type: "head", url }],
+        documents: [pageHead!],
+        ids: [`head-${Date.now()}`]
+    });
 
     const chunks = chunkText(pageBody!);
-    const bodyEmbedding = await Promise.all(
+    const bodyEmbeddings = await Promise.all(
         chunks.map((chunk) => generateVectorEmbedding({text: chunk}))
     );
 
-    console.log(headEmbedding);
-    console.log(bodyEmbedding);
+    for (let i = 0; i < bodyEmbeddings.length; i++) {
+        await collection.add({
+            embeddings: [bodyEmbeddings[i]],
+            metadatas: [{ type: "body", chunkIndex: i.toString(), url }],
+            documents: [chunks[i]],
+            ids: [`body-${Date.now()}-${i}`]
+        });
+    }
+
+    console.log("Head embedding inserted.");
+    console.log(`Successfully inserted ${bodyEmbeddings.length} body chunk embeddings.`);
 };
 
 function chunkText(text: string, size: number = 1000){
