@@ -126,4 +126,35 @@ function chunkText(text: string, size: number = 1000){
     return chunks;
 }
 
-ingest("https://zest-delta.vercel.app");
+async function chat(question: string){
+    const collection = await client.getOrCreateCollection({
+        name: WEB_COLLECTION,
+    });
+
+    const questionEmbedding = await generateVectorEmbedding({ text: question });
+
+    const results = await collection.query({
+        queryEmbeddings: [questionEmbedding],
+        nResults: 3,
+        include: ["documents", "metadatas"],
+    });
+
+    const context = results.documents?.[0]?.join("\n\n") || "No relevant information found.";
+
+    const response = await genAI.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: `You are a helpful assistant answering questions based on the following context from a website:
+
+${context}
+
+Question: ${question}
+
+Answer the question using only the information from the context above. If the answer is not in the context, say so.`,
+    });
+
+    console.log("Answer:", response.response.text());
+}
+
+// Example usage:
+// ingest("https://zest-delta.vercel.app");
+// chat("What services does this website offer?");
