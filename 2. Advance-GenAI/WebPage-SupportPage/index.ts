@@ -1,13 +1,13 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import { ChromaClient } from "chromadb";
 
 dotenv.config();
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY!
+const genAI = new GoogleGenAI({
+    apiKey: process.env.GOOGLE_API_KEY!
 });
 
 const client = new ChromaClient({
@@ -41,13 +41,16 @@ async function scrapeWebPage(url: string){
 async function generateVectorEmbedding(
     { text } : {text: string}
 ){
-    const embedding = openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: text,
-        encoding_format: "float"
+    if (!text || text.trim().length === 0) {
+        throw new Error("Cannot generate embedding for empty text");
+    }
+
+    const embedding = await genAI.models.embedContent({
+        model: "gemini-embedding-001",
+        contents: [text],
     });
 
-    return (await embedding).data[0]?.embedding!;
+    return embedding.embeddings?.[0]?.values ?? [];
 };
 
 async function ingest(url: string){
