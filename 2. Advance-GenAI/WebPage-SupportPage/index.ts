@@ -156,5 +156,5 @@ Answer the question using only the information from the context above. If the an
 }
 
 // Example usage:
-// ingest("https://zest-delta.vercel.app");
-// chat("What services does this website offer?");
+ingest("https://zest-delta.vercel.app");
+chat("What services does this website offer?");
