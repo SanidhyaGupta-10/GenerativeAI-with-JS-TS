@@ -16,8 +16,9 @@ This stack turns raw AI models into **reliable, smart, and observable production
 6. [Visual Diagrams](#visual-diagrams)
 7. [Decision Tree](#decision-tree)
 8. [Real-World Example](#real-world-example)
-9. [Quick Install](#quick-install)
-10. [Resources](#resources)
+9. [Implementation Deep Dive: index.ts](#-implementation-deep-dive-indexts)
+10. [Quick Install](#quick-install)
+11. [Resources](#resources)
 
 ---
 
@@ -379,6 +380,48 @@ User asks: *"Explain quantum computing in simple terms"*
 -   **Step 5:** Loop triggered (1 iteration)
 -   **Step 6:** 0.4 seconds, 2 documents found
 -   **Total:** 3.7 seconds, $0.045, 847 tokens
+
+---
+
+## 🔍 Implementation Deep Dive: `index.ts`
+
+The `index.ts` file in this repository demonstrates a **Stateful Math Assistant** built with LangGraph and Groq. It solves complex multi-step problems by looping between an LLM and local tools.
+
+### 1. The Tools (The Muscles)
+We define three mathematical tools using `@langchain/core/tools` and `zod`:
+- **Add**: `(a, b) => a + b`
+- **Multiply**: `(a, b) => a * b`
+- **Divide**: `(a, b) => a / b` (includes safety checks for division by zero).
+
+### 2. The Logic (The Graph)
+The workflow is structured as a **StateGraph** with the following flow:
+
+```mermaid
+graph TD
+    Start((START)) --> LLM[llmCall Node]
+    LLM --> Decision{shouldContinue?}
+    Decision -- "LLM wants to use tools" --> Tools[toolNode]
+    Decision -- "LLM is finished" --> End((END))
+    Tools --> LLM
+```
+
+### 3. Key Components
+- **`llmCall`**: Sends the message history to Groq's `llama-3.3-70b-versatile` model.
+- **`toolNode`**: A custom implementation that:
+    1. Extracts `tool_calls` from the AI's response.
+    2. Executes the corresponding TypeScript functions.
+    3. Returns `ToolMessage` objects back to the graph state.
+- **`shouldContinue`**: A conditional router that inspects the last AI message to see if any tools were requested.
+
+### 4. Real-World Execution
+The current script solves this specific prompt:
+> *"Add 12 + 18, then divide it from 5, and then multiply it by 6"*
+
+**The process:**
+1. **LLM** calls `add(12, 18)` → **Result: 30**.
+2. **LLM** (seeing 30) calls `divide(30, 5)` → **Result: 6**.
+3. **LLM** (seeing 6) calls `multiply(6, 6)` → **Result: 36**.
+4. **LLM** provides final answer: *"The result of the calculation is 36."*
 
 ---
 
