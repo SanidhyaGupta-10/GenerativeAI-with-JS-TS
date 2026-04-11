@@ -1,8 +1,17 @@
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
+import { ChatGroq } from "@langchain/groq";
+
+const apiKey = process.env.GROQ_API_KEY;
+
+const llm = new ChatGroq({
+  apiKey,
+  model: "llama-3.3-70b-versatile",
+});
+
 
 const multiply  = tool(async ({ a, b }: { a: number, b: number }) => {
-    return a*b;
+    return a * b;
 }, {
     name: 'multiply',
     description: 'Multiplies two numbers',
@@ -39,4 +48,5 @@ const divide = tool(async ({ a, b }: { a: number, b: number }) => {
 
 const tools = [multiply, add, divide];
 const toolByName = Object.fromEntries(tools.map((tool) => [tool.name, tool]));
+const llmWithTools = llm.bindTools(tools);
 
