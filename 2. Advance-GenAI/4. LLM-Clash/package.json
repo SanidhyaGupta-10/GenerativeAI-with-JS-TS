@@ -10,6 +10,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "groq-sdk": "^1.1.2",
     "openai": "^6.35.0",
     "types-node": "^0.0.1-security"
   }
