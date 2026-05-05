@@ -15,21 +15,18 @@ function createGroqChatClient(systemPrompt: string) {
         content: systemPrompt
     }];
 
-    return async function (message: string, model: string = 'qwen/qwen3-32b') {
-        // messages.push({
-        //     role: 'user',
-        //     content: message
-        // });
+    return async function (message: string, model: string = 'llama-3.3-70b-versatile') {
+        messages.push({
+            role: 'user',
+            content: message
+        });
         const response = await GroqChatClient.chat.completions.create({
             model,
             messages: [{ role: 'user', content: message }]
         })
         const assistantMessage = response.choices[0]?.message;
         if (assistantMessage) {
-            messages.push({
-                role: 'assistant',
-                content: assistantMessage.content
-            });
+            messages.push({ role: 'assistant', content: assistantMessage.content });
         }
         return assistantMessage?.content || '';
     }
@@ -48,10 +45,10 @@ function createGroqChatClient2(systemPrompt: string) {
     }];
 
     return async function (message: string, model: string = 'openai/gpt-oss-20b') {
-        // messages.push({
-        //     role: 'user',
-        //     content: message
-        // });
+        messages.push({
+            role: 'user',
+            content: message
+        });
         const response = await GroqChatClient.chat.completions.create({
             model,
             messages: [{ role: 'user', content: message }]

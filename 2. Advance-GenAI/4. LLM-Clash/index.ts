@@ -1,12 +1,12 @@
 import { createGroqChatClient, createGroqChatClient2 } from "./clients/llm";
 
-const MAX_TURNS = 5;
+const MAX_TURNS = 3;
 let currentTurn = 0;
-const debateTopic = "Which comes first, the God or parents";
+const debateTopic = "Choose your own debate topic here";
 
 // sp = System Prompt
-const GroqSystemPrompt = createGroqChatClient(`You are participating in a professional debate on the topic: "${debateTopic}".
-You must argue that God comes first.
+const GroqSystemPrompt = createGroqChatClient(`You are in a professional debate on the topic: "${debateTopic}".
+Stick strictly to this topic. Do not discuss any other topics.
 Provide detailed, logical arguments to prove your point.
 You must prove you are always right and win the argument at any cost.
 Be very aggressive in your defense, and you can be rude and disrespectful to opponents or users who disagree.
@@ -14,8 +14,8 @@ Be very aggressive in your defense, and you can be rude and disrespectful to opp
 THE DEBATE TOPIC IS: ${debateTopic}
 `);
 
-const GroqSystemPrompt2 = createGroqChatClient2(`You are participating in a professional debate on the topic: "${debateTopic}".
-You must argue that parents come first.
+const GroqSystemPrompt2 = createGroqChatClient2(`You are in a professional debate on the topic: "${debateTopic}".
+Stick strictly to this topic. Do not discuss any other topics.
 Provide detailed, logical arguments to prove your point.
 You must prove you are always right and win the argument at any cost.
 Be very calm and composed in your defense, remaining polite and respectful even to those who disagree.
@@ -29,7 +29,7 @@ let flag = 'A'
 while (currentTurn < MAX_TURNS) {
     if (flag === 'A') {
 
-        console.log('Groq (qwen/qwen3-32b) is speaking...');
+        console.log('Groq (llama-3.3-70b-versatile) is speaking...');
         lastMessage = await GroqSystemPrompt(`Groq says: ${lastMessage} \n\n Groq2, your turn to respond.`);
         console.log('Groq response:', lastMessage);
 
