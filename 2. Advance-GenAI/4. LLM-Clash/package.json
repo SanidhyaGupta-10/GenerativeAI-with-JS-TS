@@ -1,0 +1,17 @@
+{
+  "name": "4.-llm-clash",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "groq-sdk": "^1.1.2",
+    "openai": "^6.35.0",
+    "types-node": "^0.0.1-security"
+  }
+}
