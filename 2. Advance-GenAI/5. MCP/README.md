@@ -1,90 +1,135 @@
-# Model Context Protocol (MCP)
+# Weather MCP Server 🌦️ & MCP Deep Dive
 
 [![Specification](https://img.shields.io/badge/Protocol-Anthropic-blue)](https://mcp.io)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Runtime: Bun](https://img.shields.io/badge/Runtime-Bun-black)](https://bun.sh)
 
-The Model Context Protocol (MCP) is an open standard introduced by Anthropic that standardizes how applications provide context to Large Language Models (LLMs). Think of MCP as the **"USB-C port for AI applications"**—providing a universal connector between AI models and diverse data sources or tools.
+> "The USB-C for AI Applications." 
 
-## 🚀 The Problem MCP Solves
+This repository is a hands-on implementation of a **Weather MCP Server** using TypeScript and Bun. It also serves as a comprehensive guide to understanding the **Model Context Protocol (MCP)**.
 
-LLMs face two major hurdles in real-world production:
-1.  **Stale Knowledge:** LLMs are frozen in time based on their training data. They lack access to real-time information or private datasets.
-2.  **Context Efficiency:** Manually stuffing massive amounts of data into a prompt is expensive (token costs) and often hits context window limits.
+---
 
-**The Solution:** MCP allows LLMs to intelligently request and fetch only the specific, structured context they need, exactly when they need it.
+## 🧠 What is MCP? (The "Why")
+
+Before MCP, if you wanted an AI (like Claude or ChatGPT) to talk to your local database, check your calendar, or fetch live weather, you had to write custom, complex integrations for every single app. 
+
+### The Problem
+1. **Knowledge Cutoff:** LLMs are trained on past data. They don't know what's happening *right now*.
+2. **Data Silos:** Your data lives in Slack, Google Drive, GitHub, and local files. AI can't "see" them without specific permissions and connectors.
+3. **Fragmentation:** Every AI company had its own way of connecting to tools.
+
+### The Solution: MCP
+The **Model Context Protocol (MCP)** is an open standard that allows developers to build a **single server** that can talk to **any AI model**. It standardizes how AI agents discover and use tools/data, regardless of which company built the AI.
 
 ---
 
 ## 🏗️ Core Architecture
 
-The MCP ecosystem is built on a three-tier architecture:
+The MCP ecosystem works through a simple three-tier relationship:
 
-*   **MCP Host:** The user-facing application (e.g., Claude Desktop, Cursor IDE).
-*   **MCP Client:** The internal layer within the host that manages the connection to servers.
-*   **MCP Server:** Lightweight programs that expose specific capabilities (API pings, database queries, file reading) through the standardized protocol.
+```mermaid
+graph LR
+    A[MCP Host] --> B[MCP Client]
+    B --> C[MCP Server]
+    C --> D[(Data / Tools)]
+```
+
+1.  **MCP Host:** The app you use (e.g., **Claude Desktop**, **Cursor IDE**, or a custom web app).
+2.  **MCP Client:** The hidden layer inside the Host that manages the connection.
+3.  **MCP Server:** A lightweight program (like this repo!) that exposes specific data or functions.
+4.  **Local/Remote Data:** The actual source (Database, API, or local Filesystem).
 
 ---
 
-## 🛠️ Key Capabilities
+## ⚡ The Three Pillars of MCP
 
-An MCP server provides three primary methods to inject context:
+An MCP server can offer three main types of functionality:
 
-| Feature | Description | Example |
+| Pillar | What it is | Example |
 | :--- | :--- | :--- |
-| **Tools** | Executable functions the LLM can call to perform actions or fetch data. | Fetching current weather for a specific city. |
-| **Prompts** | Reusable templates and workflows that help users structure requests. | A pre-defined template for code reviews. |
-| **Resources** | Direct exposure to raw data sources. | Reading database records or a local `.txt` file. |
+| **Resources** 📚 | **Data-centric.** Think of them like "Read-only files" or database records the AI can pull into its context. | A `logs.txt` file or a specific database table. |
+| **Tools** 🛠️ | **Action-centric.** These are executable functions. The AI can decide to "call" them to do something. | **(This Project)** `getWeatherByCityName` or `delete_file`. |
+| **Prompts** 📝 | **Workflow-centric.** Pre-written templates that guide the AI on how to handle specific tasks. | A "Security Audit" prompt template. |
 
 ---
 
-## 📡 Transport Mechanisms
+## 📡 Transport Layers: How they Talk
 
-MCP supports two communication methods to bridge the host and the server:
+Servers and Hosts need a way to send messages back and forth. MCP supports two main "Transports":
 
 ### 1. STDIO (Standard Input/Output)
-*   **How it works:** Communication happens locally via terminal streams (`stdin`/`stdout`).
-*   **Use Case:** Ideal for local integrations and personal productivity tools.
-*   **Requirement:** The server code must be installed and running on the user's local machine.
+- **Local only.** The server runs as a process on your machine.
+- Messages are sent via the terminal streams (`stdin`/`stdout`).
+- **Best for:** Local developer tools, private file access.
 
 ### 2. SSE (Server-Sent Events)
-*   **How it works:** Communication via HTTP POST requests and streaming.
-*   **Use Case:** Remote hosting on the cloud or custom domains.
-*   **Requirement:** Users connect via a URL; no local source code execution is required.
+- **Remote.** The server runs on a cloud provider (AWS, Vercel, etc.).
+- Communication happens over HTTP.
+- **Best for:** SaaS integrations (Slack, GitHub, Weather APIs).
 
 ---
 
-## 💻 Building an MCP Server
+## 🔄 The MCP Workflow (The Lifecycle)
 
-Developers can build servers using TypeScript, Python, or Java. The standard workflow includes:
+When you open Claude Desktop with this Weather Server enabled, this happens:
 
-1.  **Setup:** Install the official SDK:
-    ```bash
-    npm install @modelcontextprotocol/sdk
-    ```
-2.  **Define Tools:** Use validation libraries like `Zod` to define parameters.
-    ```typescript
-    // Example: Defining a weather tool
-    {
-      name: "get_weather",
-      parameters: z.object({ city: z.string() })
+1.  **Discovery (List):** The Host asks the Server: *"What can you do?"* The server responds with a list of Tools (e.g., `getWeatherByCityName`).
+2.  **User Request:** You type: *"What's the weather in Varanasi?"*
+3.  **Reasoning:** Claude sees the request and thinks: *"I don't know the weather, but I have a tool called `getWeatherByCityName`. I'll use that."*
+4.  **Invocation (Call):** The Client sends a request to the Server: `call tool: getWeatherByCityName { city: "Varanasi" }`.
+5.  **Execution:** The Server runs the TypeScript code, fetches the data (30°C, Sunny), and sends it back.
+6.  **Response:** Claude receives the data and tells you: *"It's a sunny day in Varanasi with a temperature of 30°C."*
+
+---
+
+## 🛠️ This Project's Implementation
+
+This specific server is built with:
+- **Bun:** For lightning-fast TypeScript execution.
+- **Zod:** To define the "Input Schema" so the AI knows exactly what parameters to send (e.g., `city` must be a `string`).
+
+### The Zod Bridge
+MCP needs JSON Schema, but developers love Zod. We use this helper to bridge them:
+```typescript
+const withJsonSchema = <T extends z.ZodTypeAny>(schema: T) => {
+    return {
+        ...schema,
+        "~standard": {
+            ...schema["~standard"],
+            jsonSchema: zodToJsonSchema(schema),
+        },
+    } as any;
+};
+```
+
+---
+
+## 🚀 How to Run & Integrate
+
+### 1. Installation
+```bash
+bun install
+```
+
+### 2. Configuration (Claude Desktop)
+Add this to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "weather": {
+      "command": "bun",
+      "args": ["run", "D:/4. GenAI/2. Advance-GenAI/5. MCP/index.ts"]
     }
-    ```
-3.  **Implement Logic:** Write the function that performs the task.
-4.  **Configure Transport:** Connect to `StdioServerTransport` or SSE.
-5.  **Registration:** Register the server in your host settings (e.g., `claude_desktop_config.json`).
+  }
+}
+```
 
 ---
 
-## 🔮 The Future of MCP
-
-The goal is universal interoperability. Major platforms like **GitHub, Slack, Discord, and Google** are expected to host official MCP servers. This will create a plug-and-play ecosystem where users can instantly grant their preferred AI agent access to their professional and personal data silos through a single, unified protocol.
-
----
-
-## 🤝 Contributing & Community
-
-*   [Check the official Documentation](https://modelcontextprotocol.io)
-*   [Explore the SDK on GitHub](https://github.com/modelcontextprotocol)
+## 🤝 Community & Docs
+- [Official MCP Documentation](https://modelcontextprotocol.io)
+- [Official SDKs](https://github.com/modelcontextprotocol)
 
 ---
-*Note: This README is based on the Model Context Protocol introduced by Anthropic.*
+*Deep dive authored for the Advanced GenAI Workspace.*
