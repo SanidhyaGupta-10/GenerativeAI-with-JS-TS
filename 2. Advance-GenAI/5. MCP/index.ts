@@ -1,5 +1,6 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
-import { z } from 'zod'
+import { McpServer, StdioServerTransport } from '@modelcontextprotocol/server';
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const server = new McpServer({
     name: "Weather MCP Server",
@@ -7,9 +8,20 @@ const server = new McpServer({
     version: "1.0.0",
 });
 
+// Helper to bridge Zod schemas to MCP's expected StandardSchemaWithJSON format
+const withJsonSchema = <T extends z.ZodTypeAny>(schema: T) => {
+    return {
+        ...schema,
+        "~standard": {
+            ...schema["~standard"],
+            jsonSchema: zodToJsonSchema(schema),
+        },
+    } as any;
+};
+
 async function getWeatherByCityName(city: string) {
-    if (city.toLowerCase() == 'varansi') {
-        return { temp: '30C', forecast: 'sunny' }
+    if (city.toLowerCase() === 'varanasi' || city.toLowerCase() === 'varansi') {
+        return { temp: '30°C', forecast: 'sunny' }
     }
     if (city.toLowerCase() == 'mumbai') {
         return { temp: '26C', forecast: 'rainy' }
@@ -20,19 +32,35 @@ async function getWeatherByCityName(city: string) {
     if (city.toLowerCase() == 'delhi') {
         return { temp: '26C', forecast: 'rainy' }
     }
-}
+};
 
-server.tool(
+server.registerTool(
     'getWeatherByCityName',
     {
-        city: z.string(),
+        description: 'Get the current weather for a city',
+        inputSchema: withJsonSchema(z.object({
+            city: z.string(),
+        })),
     },
-    async ({ city }) => {
+    async ({ city }: { city: string }) => {
         return {
             content: [{
-                type: "text",
-                text: JSON.stringify(getWeatherByCityName(city))
+                type: "text" as const,
+                text: JSON.stringify(await getWeatherByCityName(city))
             }]
         }
     }
-)
+);
+
+async function init(){
+    try {
+        const transport = new StdioServerTransport();
+        await server.connect(transport);
+        console.error("Weather MCP Server started successfully");
+    } catch (error) {
+        console.error("Failed to start Weather MCP Server:", error);
+        process.exit(1);
+    }
+};
+
+await init();

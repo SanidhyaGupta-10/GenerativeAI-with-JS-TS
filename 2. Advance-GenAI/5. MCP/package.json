@@ -12,7 +12,10 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@cfworker/json-schema": "^4.1.1",
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "zod": "^3.25.76"
+    "@modelcontextprotocol/server": "^2.0.0-alpha.2",
+    "zod": "^3.25.76",
+    "zod-to-json-schema": "^3.25.2"
   }
 }
