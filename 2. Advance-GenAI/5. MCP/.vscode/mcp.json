@@ -1,0 +1,10 @@
+{
+    "servers": {
+        "getWeatherByCityName": {
+            "command": "bun",
+            "args": [
+               "D:\\GenAI\\Advance-GenAI\\MCP\\index.ts"
+            ]
+        }
+    }
+}
