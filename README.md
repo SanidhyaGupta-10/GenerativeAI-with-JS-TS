@@ -57,6 +57,9 @@ This directory explores cutting-edge implementations and complex orchestration p
 *   **MCP (Model Context Protocol)**: Implementing the future of standardized AI-tool communication and server-side logic.
 *   **Deep Dive: How LLMs Work**: Theoretical and technical breakdowns of Transformer blocks, Attention mechanisms, and Training pipelines.
 
+### 7. 🚧 GenAI Project - *Coming Soon*
+> **⏳ In Development** — This project is currently being built and will be added to the repository soon. Stay tuned for updates!
+
 ---
 
 ## 📣 Stay Tuned!
