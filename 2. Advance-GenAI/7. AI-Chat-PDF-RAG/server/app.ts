@@ -3,8 +3,15 @@ import {
     clerkMiddleware
 } from '@clerk/express';
 import userRouter from './services/user/user.routes';
+import cors from 'cors';
 
 const app = express();
+
+app.use(express.json());
+app.use(cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+}));
 app.use(clerkMiddleware());
 
 app.get('/', (req, res) => {
@@ -13,6 +20,6 @@ app.get('/', (req, res) => {
     })
 });
 
-app.use('/user', userRouter)
+app.use('/api/user', userRouter)
 
 export default app;
