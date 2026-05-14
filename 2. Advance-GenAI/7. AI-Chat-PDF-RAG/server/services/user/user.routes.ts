@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { requireAuth } from "@clerk/express";
+
+import { syncUser } from "./user.controller";
+import { attachUser } from "../../middleware/auth";
 
 const router = Router();
 
-router.post('/create-user', () => {
-    
-})
+router.post('/create-user', attachUser, syncUser)
 
-export default router;
+export default router;  
