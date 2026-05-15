@@ -9,8 +9,11 @@ router.post("/upload", upload.single("pdfFile"), async (req, res) => {
         });
     }
     const { path } = req.file;
-
-    res.send("File uploaded successfully");
+    res.status(200).json({
+        success: true,
+        message: "File uploaded successfully",
+        data: path
+    })
 })
 
 export default router;

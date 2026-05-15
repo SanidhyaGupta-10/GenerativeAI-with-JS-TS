@@ -1,18 +1,21 @@
 "use client";
 import { Upload } from "lucide-react";
+import useFileUpload from "@/hooks/useFileUpload";
 
 function FileUpload() {
+    const { uploadPDF } = useFileUpload();
     // This will create a file input element and click it
     const handleFileUpload = () => {
         const el = document.createElement("input")
         el.setAttribute("type", "file")
         el.setAttribute("accept", ".pdf")
         el.click()
-        el.addEventListener("change", (e: Event) => {
+        el.addEventListener("change", async (e: Event) => {
             const target = e.target as HTMLInputElement
             const file = target.files?.[0]
             if (file) {
-                console.log(file)
+                const res = await uploadPDF(file)
+                console.log("res", res)
             }
         })
     }

@@ -3,6 +3,7 @@ import {
     clerkMiddleware
 } from '@clerk/express';
 import userRouter from './services/user/user.routes';
+import pdfRouter from './services/pdf_upload/pdf.upload.routes';
 import cors from 'cors';
 
 const app = express();
@@ -21,5 +22,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/user', userRouter)
+app.use('/api/pdf', pdfRouter)
 
 export default app;
