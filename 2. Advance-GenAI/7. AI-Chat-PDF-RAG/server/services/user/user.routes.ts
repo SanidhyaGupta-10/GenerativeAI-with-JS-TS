@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { syncUser } from "./user.controller";
-import { attachUser } from "../../middleware/auth";
+import { attachUser } from "../../middleware/auth.middleware";
 
 const router = Router();
 
