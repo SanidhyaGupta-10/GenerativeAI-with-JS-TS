@@ -1,5 +1,6 @@
 import express from "express";
-import { upload } from "../../middleware/file.middleware.js";;
+import { upload } from "../../middleware/file.middleware.js";import { addJob } from "../../queues/myQueue.js";
+;
 const router = express.Router();
 
 router.post("/upload", upload.single("pdfFile"), async (req, res) => {
@@ -9,6 +10,9 @@ router.post("/upload", upload.single("pdfFile"), async (req, res) => {
         });
     }
     const { path } = req.file;
+    await addJob("PDF_PROCESSING", {
+        path,
+    });
     res.status(200).json({
         success: true,
         message: "File uploaded successfully",
