@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "bun run --watch server.ts",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "dev:worker": "bun run --watch ./queues/worker/pdf.worker.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
