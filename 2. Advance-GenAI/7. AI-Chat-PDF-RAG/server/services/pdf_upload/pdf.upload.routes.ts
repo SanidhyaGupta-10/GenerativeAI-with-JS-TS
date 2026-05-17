@@ -14,11 +14,16 @@ router.post("/upload", upload.single("pdfFile"), async (req, res) => {
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
     const normalizedPath = path.replace(/\\/g, '/');
 
+    const { userId, orgId } = (req as any).auth || {};
+
     await addJob("PDF_PROCESSING", {
         filename: originalname,
         destination,
-        path: normalizedPath
+        path: normalizedPath,
+        userId,
+        orgId
     });
+    
     res.status(200).json({
         success: true,
         message: "File uploaded successfully",

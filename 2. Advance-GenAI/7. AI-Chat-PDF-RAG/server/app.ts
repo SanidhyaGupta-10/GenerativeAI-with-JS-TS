@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 import {
     clerkMiddleware
 } from '@clerk/express';
@@ -24,5 +25,15 @@ app.get('/', (req, res) => {
 
 app.use('/api/user', userRouter)
 app.use('/api/pdf', pdfRouter)
+
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({ error: err.message, code: err.code });
+    }
+    if (err) {
+        return res.status(500).json({ error: err.message || "Internal server error" });
+    }
+    next();
+});
 
 export default app;
