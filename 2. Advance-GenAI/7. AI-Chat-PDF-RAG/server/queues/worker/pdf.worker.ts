@@ -8,8 +8,7 @@ const connection = {
 const worker = new Worker('PDF-PROCESSING', async (job) => {
     // job.data is already parsed as an object if you passed an object to queue.add
     const data = job.data;
-    console.log("Job picked up:", job.id);
-    console.log("Processing URL:", data.url);
+    console.log(`Job: ${JSON.stringify(data)}`);
 }, { 
     concurrency: 10, 
     connection,

@@ -10,12 +10,14 @@ router.post("/upload", upload.single("pdfFile"), async (req, res) => {
             error: "No file uploaded."
         });
     }
-    const { path, filename } = req.file;
+    const { path, originalname, destination, filename } = req.file;
     const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+    const normalizedPath = path.replace(/\\/g, '/');
 
     await addJob("PDF_PROCESSING", {
-        path,
-        url: fileUrl
+        filename: originalname,
+        destination,
+        path: normalizedPath
     });
     res.status(200).json({
         success: true,
