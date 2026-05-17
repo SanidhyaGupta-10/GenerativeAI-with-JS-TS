@@ -4,7 +4,7 @@ import { OllamaEmbeddings } from "@langchain/ollama";
 // Use 'http://ollama:11434' if running inside another Docker container
 
 export const embeddings = new OllamaEmbeddings({
-    model: "llama3",
+    model: "nomic-embed-text",
     baseUrl: "http://localhost:11434",
 });
 

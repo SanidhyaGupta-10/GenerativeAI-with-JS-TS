@@ -45,7 +45,7 @@ const worker = new Worker('PDF-PROCESSING', async (job) => {
         embeddings, 
         {
             url: "http://localhost:6333",
-            collectionName: `pdf-${data.userId || 'default'}-${data.orgId || 'default'}`,
+            collectionName: `pdf_chat_v1`,
         }
     );
     console.log(`Vector Store created and ${chunks.length} documents added`);
