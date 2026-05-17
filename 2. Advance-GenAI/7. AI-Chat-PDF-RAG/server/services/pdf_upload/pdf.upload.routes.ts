@@ -1,5 +1,7 @@
 import express from "express";
-import { upload } from "../../middleware/file.middleware.js";;
+import { upload } from "../../middleware/file.middleware.js";
+import { addJob } from "../../queues/myQueue.js";
+;
 const router = express.Router();
 
 router.post("/upload", upload.single("pdfFile"), async (req, res) => {
@@ -8,11 +10,27 @@ router.post("/upload", upload.single("pdfFile"), async (req, res) => {
             error: "No file uploaded."
         });
     }
-    const { path } = req.file;
+    const { path, originalname, destination, filename } = req.file;
+    const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+    const normalizedPath = path.replace(/\\/g, '/');
+
+    const { userId, orgId } = (req as any).auth || {};
+
+    await addJob("PDF_PROCESSING", {
+        filename: originalname,
+        destination,
+        path: normalizedPath,
+        userId,
+        orgId
+    });
+    
     res.status(200).json({
         success: true,
         message: "File uploaded successfully",
-        data: path
+        data: {
+            path,
+            url: fileUrl
+        }
     })
 })
 

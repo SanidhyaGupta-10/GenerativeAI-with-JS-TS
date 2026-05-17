@@ -4,7 +4,6 @@ import useFileUpload from "@/hooks/useFileUpload";
 
 function FileUpload() {
     const { uploadPDF } = useFileUpload();
-    // This will create a file input element and click it
     const handleFileUpload = () => {
         const el = document.createElement("input")
         el.setAttribute("type", "file")
@@ -14,8 +13,13 @@ function FileUpload() {
             const target = e.target as HTMLInputElement
             const file = target.files?.[0]
             if (file) {
-                const res = await uploadPDF(file)
-                console.log("res", res)
+                try {
+                    const res = await uploadPDF(file)
+                    console.log("res", res)
+                } catch (error) {
+                    console.error("Failed to upload PDF:", error)
+                    alert("Failed to upload PDF. Please try again or check the file size.")
+                }
             }
         })
     }
