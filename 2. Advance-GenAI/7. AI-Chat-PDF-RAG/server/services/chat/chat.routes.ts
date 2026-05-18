@@ -4,15 +4,10 @@ import { authMiddleware } from "../../middleware/auth.middleware";
 
 const router = Router();
 
-/**
- * Chat With PDF Route
- * @desc - Chat with PDF using Qdrant and Ollama
- * @access Private
- * @method POST
- * @url /api/chats/chat-with-pdf
- * @middlewares authMiddleware
- * @returns {message: string, data: string}
- */
+    /* 
+    * @route /chat-with-pdf
+    * @desc This endpoint processes user queries against uploaded PDFs by fetching context from the vector database and generating an AI response.
+    */
 router.post("/chat-with-pdf", authMiddleware, chat);
 
 export default router;

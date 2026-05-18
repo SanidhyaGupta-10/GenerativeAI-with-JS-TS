@@ -4,6 +4,10 @@ import { addJob } from "../../queues/myQueue.js";
 ;
 const router = express.Router();
 
+    /* 
+    * @route /upload
+    * @desc This endpoint receives a PDF file upload, saves it to disk, and queues a job for background processing (embedding extraction).
+    */
 router.post("/upload", upload.single("pdfFile"), async (req, res) => {
     if (!req.file) {
         return res.status(400).json({

@@ -2,6 +2,10 @@ import { clerkClient } from "@clerk/express";
 import { prisma } from "../../db/connection";
 import { Request, Response } from "express";
 
+/**
+ * @controller syncUser
+ * @desc Syncs user data from Clerk with our local Prisma database. This handles creating a new user or updating an existing user's details (email, name, image).
+ */
 export const syncUser = async (req: Request, res: Response): Promise<void> => {
   try {
     // 1. Get userId from auth middleware

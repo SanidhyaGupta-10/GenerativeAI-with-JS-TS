@@ -3,6 +3,10 @@ import { embeddings } from '../../db/ollama';
 import type { Request, Response } from "express";
 import { llm } from "../../db/groq";
 
+/**
+ * @controller chat
+ * @desc Handles incoming user chat messages. It queries the Qdrant vector store to retrieve relevant document chunks (context) and passes them to the LLM to generate an informed response.
+ */
 async function chat(req: Request, res: Response) {
     try {
         console.log("This is service got hitted")
