@@ -56,9 +56,7 @@ This directory explores cutting-edge implementations and complex orchestration p
 *   **LLM-Clash**: A comparative framework to benchmark different models (GPT-4 vs Llama 3 vs DeepSeek) on logic and coding tasks.
 *   **MCP (Model Context Protocol)**: Implementing the future of standardized AI-tool communication and server-side logic.
 *   **Deep Dive: How LLMs Work**: Theoretical and technical breakdowns of Transformer blocks, Attention mechanisms, and Training pipelines.
-
-### 7. 🚧 GenAI Project - *Coming Soon*
-> **⏳ In Development** — This project is currently being built and will be added to the repository soon. Stay tuned for updates!
+*   **AI-Chat-PDF-RAG (Completed)**: A full-stack application for chatting with PDF documents using Retrieval-Augmented Generation (RAG). Features a modern glassmorphism UI, secure Clerk authentication, Neon PostgreSQL database, and Groq AI integration.
 
 ---
 
