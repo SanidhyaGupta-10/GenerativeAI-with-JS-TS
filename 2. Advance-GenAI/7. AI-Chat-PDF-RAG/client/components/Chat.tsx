@@ -5,7 +5,14 @@ import { useChat } from "@/hooks/useChat"
 import { useEffect, useRef } from "react";
 
 function Chat() {
-    const { messages, input, setInput, sendMessage, isLoading, error } = useChat();
+    const { 
+        messages, 
+        input, 
+        setInput, 
+        sendMessage, 
+        isLoading, 
+        error 
+    } = useChat();
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to the bottom when messages change

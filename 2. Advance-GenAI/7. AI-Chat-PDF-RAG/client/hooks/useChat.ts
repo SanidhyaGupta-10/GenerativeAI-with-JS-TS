@@ -35,7 +35,19 @@ export const useChat = () => {
       // LLM response.data from langchain often has a content field or is directly a string
       const responseData = response.data.data;
       console.log(responseData);
-      const botText = typeof responseData === 'string' ? responseData : responseData?.content || JSON.stringify(responseData);
+      
+      let botText = '';
+      if (typeof responseData === 'string') {
+        botText = responseData;
+      } else if (responseData?.content) {
+        botText = responseData.content;
+      } else if (responseData?.kwargs?.content) {
+        botText = responseData.kwargs.content;
+      } else if (responseData?.text) {
+        botText = responseData.text;
+      } else {
+        botText = JSON.stringify(responseData);
+      }
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
