@@ -1,4 +1,4 @@
-import { OllamaEmbeddings } from "@langchain/ollama";
+import { OllamaEmbeddings, Ollama } from "@langchain/ollama";
 
 // 1. Initialize Ollama LLM and Embeddings
 // Use 'http://ollama:11434' if running inside another Docker container
@@ -6,4 +6,8 @@ import { OllamaEmbeddings } from "@langchain/ollama";
 export const embeddings = new OllamaEmbeddings({
     model: "nomic-embed-text",
     baseUrl: "http://localhost:11434",
+});
+
+export const llm = new Ollama({
+    model: "llama3",
 });
