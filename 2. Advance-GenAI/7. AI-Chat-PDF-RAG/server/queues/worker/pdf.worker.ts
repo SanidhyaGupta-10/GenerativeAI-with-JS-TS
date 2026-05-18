@@ -40,7 +40,7 @@ const worker = new Worker('PDF-PROCESSING', async (job) => {
     console.log(`Generated ${chunks.length} chunks`);
 
     // 4. Store in Qdrant
-    const vectorStore = await QdrantVectorStore.fromDocuments(
+     const vectorStore = await QdrantVectorStore.fromDocuments(
         chunks,
         embeddings, 
         {
@@ -65,5 +65,3 @@ worker.on('failed', (job, err) => {
 });
 
 console.log("PDF Worker is running and waiting for jobs...");
-
-

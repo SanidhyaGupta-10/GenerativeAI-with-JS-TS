@@ -1,10 +1,10 @@
 import { Router } from "express";
 
 import { syncUser } from "./user.controller";
-import { attachUser } from "../../middleware/auth.middleware";
+import { authMiddleware } from "../../middleware/auth.middleware";
 
 const router = Router();
 
-router.post('/create-user', attachUser, syncUser)
+router.post('/create-user', authMiddleware, syncUser)
 
 export default router;  
