@@ -7,7 +7,3 @@ export const embeddings = new OllamaEmbeddings({
     model: "nomic-embed-text",
     baseUrl: "http://localhost:11434",
 });
-
-export const llm = new Ollama({
-    model: "llama3",
-});

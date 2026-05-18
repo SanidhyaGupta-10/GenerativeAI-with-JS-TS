@@ -20,6 +20,7 @@
     "@clerk/express": "^2.1.15",
     "@langchain/community": "^1.1.28",
     "@langchain/core": "^1.1.46",
+    "@langchain/groq": "^1.2.0",
     "@langchain/ollama": "^1.2.7",
     "@langchain/openai": "^1.4.5",
     "@langchain/qdrant": "^1.0.2",

@@ -1,9 +1,11 @@
 import { QdrantVectorStore } from "@langchain/qdrant";
-import { embeddings, llm } from '../../db/ollama';
+import { embeddings } from '../../db/ollama';
 import type { Request, Response } from "express";
+import { llm } from "../../db/groq";
 
 async function chat(req: Request, res: Response) {
     try {
+        console.log("This is service got hitted")
         /**
          * 1. Fetch Query
          * 2. than vector search
@@ -33,14 +35,16 @@ async function chat(req: Request, res: Response) {
         );
 
         const result = await retriever.invoke(query);
-
+        console.log('Service hitted it goes to llm=>')
         /**
          * Create response from context
          */
-        const response = await llm.invoke([
-            { role: "system", content: `You are a helpful assistant. Use the context to answer the question.` },
-            { role: "user", content: `${query} . Context: ${JSON.stringify(result)}` }
+         const response = await llm.invoke([
+          { role: "system", content: `You are a helpful assistant. Use the context to answer the question.` },
+           { role: "user", content: `${query} . Context: ${JSON.stringify(result)}` }
         ]);
+
+        console.log('LLM hitted and responded')
         res.json({ 
             message: "Success", 
             data: response 
