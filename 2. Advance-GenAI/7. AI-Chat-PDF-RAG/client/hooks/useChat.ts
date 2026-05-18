@@ -7,12 +7,25 @@ export interface Message {
   isUser: boolean;
 }
 
+/**
+ * @hook useChat
+ * @description Manages the state and logic for the AI chat interface. Handles sending messages, receiving AI responses, and maintaining the conversation history.
+ * @state {Message[]} messages - Array containing the history of the conversation.
+ * @state {string} input - The current text in the chat input field.
+ * @state {boolean} isLoading - True when waiting for the AI response.
+ * @state {string | null} error - Stores any error messages encountered during chat.
+ * @returns {Object} State variables and the `sendMessage` function.
+ */
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+   * @function sendMessage
+   * @description Validates the input, adds the user's message to the chat history, and sends it to the backend. It then processes the LLM's response and adds it to the chat history. It also handles and displays any errors encountered.
+   */
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 

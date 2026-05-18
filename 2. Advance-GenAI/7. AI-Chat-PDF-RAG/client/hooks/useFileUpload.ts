@@ -1,6 +1,11 @@
 import { api } from '@/lib/axios';
 import { useAuth } from '@clerk/nextjs';
 
+/**
+ * @hook useFileUpload
+ * @description Provides functionality to upload a PDF file to the backend. It securely attaches the user's authentication token to the multipart form data request.
+ * @returns {Object} Exposes the `uploadPDF` asynchronous function to trigger the upload.
+ */
 function useFileUpload() {
     const { getToken } = useAuth();
 

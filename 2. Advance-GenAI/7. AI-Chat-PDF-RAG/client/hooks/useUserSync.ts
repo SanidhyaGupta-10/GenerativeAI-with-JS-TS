@@ -5,11 +5,9 @@ import { useAuth } from '@clerk/nextjs';
 import { api } from '@/lib/axios';
 
 /**
- * useUserSync
- *
- * Fires exactly once per authenticated session.
- * Sends the Clerk session token to the backend so the server can
- * verify the user via clerkClient and upsert them in Neon/Prisma.
+ * @hook useUserSync
+ * @description Fires exactly once per authenticated session to sync the user. It grabs the Clerk session token and sends it to the backend to verify the user and upsert them in the database (Neon/Prisma).
+ * @effect Automatically runs on mount if the user is loaded and signed in.
  */
 export function useUserSync() {
   const { isSignedIn, isLoaded, getToken } = useAuth();
