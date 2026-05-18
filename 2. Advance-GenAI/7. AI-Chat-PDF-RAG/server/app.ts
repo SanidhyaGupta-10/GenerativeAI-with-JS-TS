@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
  */
 app.use('/api/user', userRouter)
 app.use('/api/pdf', pdfRouter)
-app.use('/api/chat', chatRouter)
+app.use('/api/chats', chatRouter)
 
 /*
  * Error Handling Middleware

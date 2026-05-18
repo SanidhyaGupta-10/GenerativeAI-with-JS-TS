@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 
 async function chat(req: Request, res: Response) {
     try {
-        const query = req.body.query as string;
+        const query = (req.body.query as string) || "What to learn in DSA";
         const vectorStore = await QdrantVectorStore.fromExistingCollection(
             embeddings,
             {
