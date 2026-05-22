@@ -2,6 +2,7 @@ import "dotenv/config"; // loads .env file into process.env
 import OpenAI from "openai"; // openai SDK — works with Groq too
 import fs from "fs/promises"; // async file system (mkdir, writeFile)
 import * as readline from "readline"; // reads input from terminal
+import path from "path"; // path utilities for safe file resolution
 
 // point the OpenAI SDK at Groq's server instead of OpenAI
 const client = new OpenAI({
@@ -68,12 +69,12 @@ async function generateProject(userPrompt: string): Promise<void> {
   console.log("\n🤖 Thinking...\n");
 
   const response = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile", // 70B follows JSON rules much better than 8B
+    model: "openai/gpt-oss-120b", 
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: userPrompt },
     ],
-    response_format: { type: "json_object" }, // forces the model to return valid JSON
+    response_format: { type: "json_object" },
   });
 
   const raw = response.choices[0]?.message.content || "";
@@ -93,12 +94,23 @@ async function generateProject(userPrompt: string): Promise<void> {
 
   const parsed = JSON.parse(cleaned); // { folder: "...", files: [{path, content}] }
 
-  // create the project folder (recursive:true = no error if already exists)
-  await fs.mkdir(parsed.folder, { recursive: true });
+  // basic validation — AI might return missing/wrong types
+  if (typeof parsed.folder !== "string" || !Array.isArray(parsed.files)) {
+    throw new Error("Invalid AI response: missing folder or files");
+  }
 
-  // write each file — use for...of NOT forEach (forEach breaks with await)
+  // lock all output inside cwd — prevents AI from writing outside project
+  const root = path.resolve(process.cwd(), parsed.folder);
+  if (!root.startsWith(process.cwd())) throw new Error("Unsafe folder path");
+  await fs.mkdir(root, { recursive: true });
+
   for (const file of parsed.files) {
-    const fullPath = `${parsed.folder}/${file.path}`;
+    if (typeof file.path !== "string" || typeof file.content !== "string") continue;
+
+    const fullPath = path.resolve(root, file.path);
+    if (!fullPath.startsWith(root)) throw new Error(`Unsafe file path: ${file.path}`);
+
+    await fs.mkdir(path.dirname(fullPath), { recursive: true }); // create subfolders
     await fs.writeFile(fullPath, file.content, "utf-8");
     console.log("✅ Created:", fullPath);
   }
