@@ -56,7 +56,8 @@ This directory explores cutting-edge implementations and complex orchestration p
 *   **LLM-Clash**: A comparative framework to benchmark different models (GPT-4 vs Llama 3 vs DeepSeek) on logic and coding tasks.
 *   **MCP (Model Context Protocol)**: Implementing the future of standardized AI-tool communication and server-side logic.
 *   **Deep Dive: How LLMs Work**: Theoretical and technical breakdowns of Transformer blocks, Attention mechanisms, and Training pipelines.
-*   **AI-Chat-PDF-RAG (Completed)**: A full-stack application for chatting with PDF documents using Retrieval-Augmented Generation (RAG). Features a modern glassmorphism UI, secure Clerk authentication, Neon PostgreSQL database, and Groq AI integration.
+*   **AI-Chat-PDF-RAG**: A full-stack application for chatting with PDF documents using Retrieval-Augmented Generation (RAG). Features a modern glassmorphism UI, secure Clerk authentication, Neon PostgreSQL database, and Groq AI integration.
+*   **Own-AI-IDE**: An AI-powered code generation agent that takes a plain English prompt and **automatically scaffolds a complete working project** — creating every folder and file on disk. Powered by **Llama 3.3 70B** via Groq with enforced JSON-only output and support for multiple LLM providers.
 
 ---
 
