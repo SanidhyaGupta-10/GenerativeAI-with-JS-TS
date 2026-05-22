@@ -1,12 +1,15 @@
-import "dotenv/config";
-import OpenAI from "openai";
-import fs from "fs/promises";
+import "dotenv/config"; // loads .env file into process.env
+import OpenAI from "openai"; // openai SDK — works with Groq too
+import fs from "fs/promises"; // async file system (mkdir, writeFile)
+import * as readline from "readline"; // reads input from terminal
 
+// point the OpenAI SDK at Groq's server instead of OpenAI
 const client = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1",
   apiKey: process.env.GROQ_API_KEY,
 });
 
+// tells the AI exactly what format to return — forces pure JSON output
 const SYSTEM_PROMPT = `
 You are an elite AI coding agent.
 
@@ -45,74 +48,88 @@ REQUIRED JSON FORMAT:
 
 IMPORTANT:
 - "folder" must contain the project folder name
-- Every file must have:
-  - path
-  - content
-- path must include filename and extension
-- content must contain COMPLETE code
-- Do not shorten code
-- Do not use placeholders
+- Every file must have path and content
+- content must be COMPLETE code — no placeholders
 `;
 
+// wraps readline in a Promise so we can use await on terminal input
+function readLine(prompt: string): Promise<string> {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) => {
+    rl.question(prompt, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
 
-async function main() {
-  console.log('Agent is starting ... ')
+// sends the prompt to AI, parses the JSON, and writes files to disk
+async function generateProject(userPrompt: string): Promise<void> {
+  console.log("\n🤖 Thinking...\n");
+
   const response = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
-
+    model: "llama-3.3-70b-versatile", // 70B follows JSON rules much better than 8B
     messages: [
-      {
-        role: "system",
-        content: SYSTEM_PROMPT
-      },
-
-      {
-        role: "user",
-        content: "Create a Weather APP using HTML, TAILWIND CSS, Javascript make it JS",
-      },
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userPrompt },
     ],
-    response_format: { type: "json_object" },
+    response_format: { type: "json_object" }, // forces the model to return valid JSON
   });
 
-  const raw =
-    response.choices[0]?.message.content || "";
+  const raw = response.choices[0]?.message.content || "";
 
-  console.log("\nRAW:\n", raw);
+  // remove markdown fences in case the model adds them anyway
+  let cleaned = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
 
-  // Strip markdown fences if model adds them despite json_object mode
-  let cleaned = raw
-    .replace(/```json/gi, "")
-    .replace(/```/g, "")
-    .trim();
-
-  // Fallback: extract first JSON object found in the string
+  // if response doesn't start with {, try to extract the JSON block from it
   if (!cleaned.startsWith("{")) {
     const match = cleaned.match(/\{[\s\S]*\}/);
     if (match) {
       cleaned = match[0];
     } else {
-      throw new Error("No valid JSON found in model response.\n\nRAW response:\n" + raw);
+      throw new Error("No valid JSON in response:\n" + raw);
     }
   }
 
-  const parsed = JSON.parse(cleaned);
+  const parsed = JSON.parse(cleaned); // { folder: "...", files: [{path, content}] }
 
-  console.log('Agent started making files and folders');
-  // create folder
-  await fs.mkdir(parsed.folder, {
-    recursive: true,
-  });
+  // create the project folder (recursive:true = no error if already exists)
+  await fs.mkdir(parsed.folder, { recursive: true });
 
-  // create files
+  // write each file — use for...of NOT forEach (forEach breaks with await)
   for (const file of parsed.files) {
     const fullPath = `${parsed.folder}/${file.path}`;
-
-    await fs.writeFile(fullPath, file.content);
-
-    console.log("Created:", fullPath);
+    await fs.writeFile(fullPath, file.content, "utf-8");
+    console.log("✅ Created:", fullPath);
   }
 
-  console.log("\n✅ Project created!");
+  console.log(`\n🎉 Done! Project saved in "${parsed.folder}"\n`);
+}
+
+async function main(): Promise<void> {
+  console.log('🤖 Own AI IDE — type your idea or "exit" to quit\n');
+
+  // keep asking for prompts until user types "exit"
+  while (true) {
+    const input = await readLine("What do you want to build? > ");
+
+    if (input.toLowerCase() === "exit") {
+      console.log("👋 Bye!");
+      break; // stop the loop
+    }
+
+    if (!input) {
+      console.log("⚠️  Please type something.\n");
+      continue; // skip to next iteration
+    }
+
+    try {
+      await generateProject(input);
+    } catch (err) {
+      // catch errors so the loop keeps running instead of crashing
+      console.error("❌ Error:", (err as Error).message, "\n");
+    }
+  }
 }
 
 main();
