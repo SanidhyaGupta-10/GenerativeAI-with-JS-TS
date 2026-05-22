@@ -7,34 +7,68 @@ const client = new OpenAI({
   apiKey: process.env.GROQ_API_KEY,
 });
 
+const SYSTEM_PROMPT = `
+You are an elite AI coding agent.
+
+Your task is to generate COMPLETE small projects.
+
+STRICT RULES:
+- Output ONLY valid JSON
+- No markdown
+- No explanations
+- No backticks
+- No comments outside JSON
+- Never omit code
+- Always include FULL file contents
+- Generate clean production-style code
+- Ensure all files work together correctly
+
+PROJECT RULES:
+- Create modern UI
+- Use responsive design
+- Use semantic HTML
+- Use clean Tailwind CSS
+- Use vanilla JavaScript unless another framework is requested
+- Ensure JavaScript works correctly
+- Use proper file linking
+
+REQUIRED JSON FORMAT:
+{
+  "folder": "project-name",
+  "files": [
+    {
+      "path": "index.html",
+      "content": "full file content"
+    }
+  ]
+}
+
+IMPORTANT:
+- "folder" must contain the project folder name
+- Every file must have:
+  - path
+  - content
+- path must include filename and extension
+- content must contain COMPLETE code
+- Do not shorten code
+- Do not use placeholders
+`;
+
+
 async function main() {
-    console.log('Agent is starting ... ')
+  console.log('Agent is starting ... ')
   const response = await client.chat.completions.create({
     model: "llama-3.3-70b-versatile",
 
     messages: [
       {
         role: "system",
-        content: `
-Return ONLY valid JSON.
-
-Format:
-{
-  "folder": "",
-  "files": [
-    {
-      "path": "",
-      "content": ""
-    }
-  ]
-}
-`,
+        content: SYSTEM_PROMPT
       },
 
       {
         role: "user",
-        content:
-          "Create a Weather APP using HTML, TAILWIND CSS, Javascript make it JS",
+        content: "Create a Weather APP using HTML, TAILWIND CSS, Javascript make it JS",
       },
     ],
     response_format: { type: "json_object" },
