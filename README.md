@@ -33,6 +33,7 @@ In a world rapidly evolving with AI, staying ahead means understanding the "Why"
 | **Advanced Orchestration** | Mastering LangGraph, LangChain, and LangSmith for production. | 🕸️ 🧪 |
 | **MCP Integration** | Leveraging Model Context Protocol for seamless tool communication. | 🔌 📡 |
 | **Hardware Agnostic** | Implementations for both large-scale GPUs and Small Language Models (SLMs). | 💻 📱 |
+| **Memory Management** | Techniques for efficient memory usage in AI pipelines and models. | 🧠💾 |
 
 ---
 
@@ -58,6 +59,7 @@ This directory explores cutting-edge implementations and complex orchestration p
 *   **Deep Dive: How LLMs Work**: Theoretical and technical breakdowns of Transformer blocks, Attention mechanisms, and Training pipelines.
 *   **AI-Chat-PDF-RAG**: A full-stack application for chatting with PDF documents using Retrieval-Augmented Generation (RAG). Features a modern glassmorphism UI, secure Clerk authentication, Neon PostgreSQL database, and Groq AI integration.
 *   **Own-AI-IDE**: An AI-powered code generation agent that takes a plain English prompt and **automatically scaffolds a complete working project** — creating every folder and file on disk. Powered by **Llama 3.3 70B** via Groq with enforced JSON-only output and support for multiple LLM providers.
+*   **Memory Management**: Techniques for efficient memory usage in AI pipelines and models, ensuring optimal performance and resource utilization.
 
 ---
 
