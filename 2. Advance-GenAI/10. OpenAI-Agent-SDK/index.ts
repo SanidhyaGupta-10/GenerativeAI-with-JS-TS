@@ -68,4 +68,4 @@ async function main(query = 'Hi, How are you?') {
 }
 
 // Run the main function
-main(`What's the current weather in Varansi? I need to decide what to wear.`);
+main(`What's the current weather in Varansi? Gujrat and Surat`);
