@@ -6,39 +6,19 @@ An AI-powered agent built with the **OpenAI Agent SDK** that runs entirely on yo
 
 ## 📐 Architecture / How It Works
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    User Query                       │
-│         "What's the weather in Varanasi?"           │
-└──────────────────────┬──────────────────────────────┘
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│              OpenAI Agent SDK (`run()`)              │
-│  • Receives user query                              │
-│  • Sends prompt + tool schemas to the LLM           │
-│  • Manages multi-turn conversation (maxTurns: 10)   │
-└──────────────────────┬──────────────────────────────┘
-                       ▼
-┌─────────────────────────────────────────────────────┐
-│           LLM (Ollama / OpenAI Cloud)               │
-│  • Understands the query                            │
-│  • Decides if a tool call is needed                 │
-│  • Returns a tool-call request OR a final answer    │
-└──────────────────────┬──────────────────────────────┘
-                       ▼
-           ┌───── Tool Call? ─────┐
-           │ YES                  │ NO
-           ▼                     ▼
-┌──────────────────────┐  ┌──────────────────────┐
-│  getWeatherInfoByCity│  │   Return final text  │
-│  (wttr.in API call)  │  │   response to user   │
-└──────────┬───────────┘  └──────────────────────┘
-           │
-           ▼
-┌──────────────────────────────────────────────────────┐
-│  Tool result sent back to LLM → LLM generates       │
-│  a human-friendly response using the weather data    │
-└──────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A["User Query — What is the weather in Varanasi?"]
+    B["OpenAI Agent SDK — run\n• Receives user query\n• Sends prompt + tool schemas to LLM\n• Manages multi-turn conversation"]
+    C["LLM — Ollama or OpenAI Cloud\n• Understands the query\n• Decides if a tool call is needed\n• Returns tool-call request OR final answer"]
+    D{"Tool Call?"}
+    E["getWeatherInfoByCity\nwttr.in API call"]
+    F["Return final text\nresponse to user"]
+    G["Tool result sent back to LLM\nLLM generates a human-friendly response"]
+
+    A --> B --> C --> D
+    D -- YES --> E --> G
+    D -- NO --> F
 ```
 
 ### Step-by-Step Flow
